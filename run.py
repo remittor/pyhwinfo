@@ -57,21 +57,21 @@ else:
                 ('cbSize', DWORD),
                 ('fMask', ULONG),
                 ('hwnd', HWND),
-                ('lpVerb', LPCSTR),
-                ('lpFile', LPCSTR),
-                ('lpParameters', LPCSTR),
-                ('lpDirectory', LPCSTR),
+                ('lpVerb', LPCWSTR),
+                ('lpFile', LPCWSTR),
+                ('lpParameters', LPCWSTR),
+                ('lpDirectory', LPCWSTR),
                 ('nShow', ctypes.c_int),
                 ('hInstApp', HINSTANCE),
                 ('lpIDList', LPVOID),
-                ('lpClass', LPCSTR),
+                ('lpClass', LPCWSTR),
                 ('hkeyClass', HKEY),
                 ('dwHotKey', DWORD),
                 ('DUMMYUNIONNAME', HANDLE),
                 ('hProcess', HANDLE),
             ]
 
-        _ShellExecuteEx = ctypes.windll.shell32.ShellExecuteEx
+        _ShellExecuteEx = ctypes.windll.shell32.ShellExecuteExW
         _ShellExecuteEx.restype = BOOL
         _ShellExecuteEx.argtypes = [ ctypes.POINTER(SHELLEXECUTEINFO) ]
 
@@ -94,10 +94,10 @@ else:
             data.cbSize = ctypes.sizeof(data)
             data.fMask = mask
             data.hwnd = hwnd
-            data.lpVerb = lpverb.encode() if lpverb else None
-            data.lpFile = file.encode()
-            data.lpParameters = params.encode()
-            data.lpDirectory = directory.encode()
+            data.lpVerb = lpverb if lpverb else None
+            data.lpFile = file
+            data.lpParameters = params
+            data.lpDirectory = directory
             data.nShow = show
             data.hInstApp = None
             data.lpIDList = None
@@ -161,10 +161,18 @@ def _elevate_windows(command, cwd = None, hide = False):
         if not cwd:
             cwd = os.getcwd()
 
-        params = ' '.join(map(quote, command[1:]))
+        print('CWD:', cwd)
+        exe = command[0]
+        params = command[1:]
+        if exe.lower() in [ 'cmd.exe', 'cmd' ] and len(params) == 2 and params[0].lower() in [ '/k', '/c' ]:
+            params = params[0] + f' cd /d "{cwd}" && ' + params[1]
+            print('CMD:', exe, params)
+        else:
+            print('EXE:', exe, params)
+            params = ' '.join(map(quote, params))
 
         res = winapi.ShellExecuteEx(
-            file = command[0],  # sys.executable,
+            file = exe,  # sys.executable,
             params = params,
             directory = cwd,
             lpverb = base64.b64decode( 'cnVu0XM='.replace('0', 'Y') ).decode(),  # decoding RUNAS
@@ -186,7 +194,6 @@ def main(argv = None, prog = None):
         print('Unsupported arg --windows-process-data')
         sys.exit(1)
     elif unknown:
-        print(unknown)
         elevate(unknown)
         sys.exit()
     else:
