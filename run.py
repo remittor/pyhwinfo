@@ -15,6 +15,8 @@ import traceback
 import base64
 
 
+g_first_run = False
+
 if os.name != 'nt':
     winapi = None
 else:
@@ -185,16 +187,49 @@ def _elevate_windows(command, cwd = None, hide = False):
         pass
 
 def main(argv = None, prog = None):
+    global g_first_run
     import argparse
     parser = argparse.ArgumentParser(prog = prog)
     parser.add_argument('--windows-process-data', help = 'path to special dir')
     args, unknown = parser.parse_known_args(argv)
+    
+    cwd = os.path.dirname(os.path.abspath(__file__))
+
+    start_bat = f'{cwd}\\!START.BAT'
+    data = None
+    try:
+        with open(start_bat, 'r', newline = '\n') as file:
+            data = file.read()
+    except Exception:
+        pass
+
+    test_bat = f'{cwd}\\TEST.BAT'
+    data = None
+    try:
+        with open(test_bat, 'r', newline = '\n') as file:
+            data = file.read()
+    except Exception:
+        pass
+    if not data or 'call run.bat memspd.py' not in data:
+        g_first_run = True
+        data = 'call run.bat memspd.py \n'
+        with open(test_bat, 'w', newline = '\r\n') as file:
+            file.write(data)
+        if __file__ and __file__.lower().endswith('\\test.bat'):
+            sys.exit(1)
+
+    if g_first_run or not unknown:
+        command = [ 'cmd.exe', '/c', f'python\\python.exe meminfo.py && pause || pause' ]
+    elif unknown[0].endswith('.py'):
+        command = [ 'cmd.exe', '/c', f'python\\python.exe {unknown[0]} && pause || pause' ]
+    else:
+        command = unknown
 
     if args.windows_process_data:
         print('Unsupported arg --windows-process-data')
         sys.exit(1)
-    elif unknown:
-        elevate(unknown)
+    elif command:
+        elevate(command, cwd = cwd)
         sys.exit()
     else:
         parser.print_usage()
