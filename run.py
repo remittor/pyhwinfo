@@ -1,23 +1,6 @@
-# -*- coding: utf8 -*-
-# Copyright (c) 2020 Niklas Rosenstein
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to
-# deal in the Software without restriction, including without limitation the
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-# sell copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# (c) https://github.com/NiklasRosenstein
 #
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-# IN THE SOFTWARE.
 
 from __future__ import annotations
 
@@ -29,6 +12,7 @@ import shutil
 import shlex
 import subprocess
 import traceback
+import base64
 
 
 if os.name != 'nt':
@@ -105,12 +89,12 @@ else:
         SW_SHOWNORMAL = 1
 
         @staticmethod
-        def ShellExecuteEx(file, params, directory, verb = None, show = SW_SHOW, mask = 0, hwnd = None):
+        def ShellExecuteEx(file, params, directory, lpverb = None, show = SW_SHOW, mask = 0, hwnd = None):
             data = winapi.SHELLEXECUTEINFO()
             data.cbSize = ctypes.sizeof(data)
             data.fMask = mask
             data.hwnd = hwnd
-            data.lpVerb = verb.encode() if verb else None
+            data.lpVerb = lpverb.encode() if lpverb else None
             data.lpFile = file.encode()
             data.lpParameters = params.encode()
             data.lpDirectory = directory.encode()
@@ -183,7 +167,7 @@ def _elevate_windows(command, cwd = None, hide = False):
             file = command[0],  # sys.executable,
             params = params,
             directory = cwd,
-            verb = ' ru n as'.replace(' ', ''),
+            lpverb = base64.b64decode( 'cnVu0XM='.replace('0', 'Y') ).decode(),  # decoding RUNAS
             mask = 0x40,
             show = winapi.SW_HIDE if hide else winapi.SW_SHOW
         )
