@@ -195,13 +195,18 @@ def main(argv = None, prog = None):
     
     cwd = os.path.dirname(os.path.abspath(__file__))
 
-    start_bat = f'{cwd}\\!START.BAT'
+    start_bat = f'{cwd}\\!START.bat'
     data = None
     try:
         with open(start_bat, 'r', newline = '\n') as file:
             data = file.read()
     except Exception:
         pass
+    if not data or 'call run.bat meminfo.py' not in data:
+        g_first_run = True
+        data = 'call run.bat meminfo.py \n'
+        with open(start_bat, 'w', newline = '\r\n') as file:
+            file.write(data)
 
     test_bat = f'{cwd}\\TEST.BAT'
     data = None
@@ -215,13 +220,12 @@ def main(argv = None, prog = None):
         data = 'call run.bat memspd.py \n'
         with open(test_bat, 'w', newline = '\r\n') as file:
             file.write(data)
-        if __file__ and __file__.lower().endswith('\\test.bat'):
-            sys.exit(1)
 
     if g_first_run or not unknown:
         command = [ 'cmd.exe', '/c', f'python\\python.exe meminfo.py && pause || pause' ]
     elif unknown[0].endswith('.py'):
-        command = [ 'cmd.exe', '/c', f'python\\python.exe {unknown[0]} && pause || pause' ]
+        params = " ".join(unknown)
+        command = [ 'cmd.exe', '/c', f'python\\python.exe {params} && pause || pause' ]
     else:
         command = unknown
 

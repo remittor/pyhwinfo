@@ -9,7 +9,7 @@ Python module for retrieving hardware information
 
 ## Usage
 
-* Run `!START.bat`
+* Run `run.bat` or `!START.bat`
 
 ## GUI Preview
 
