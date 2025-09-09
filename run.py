@@ -201,6 +201,7 @@ def main(argv = None, prog = None):
         with open(start_bat, 'r', newline = '\n') as file:
             data = file.read()
     except Exception:
+        g_first_run = True
         pass
     if not data or 'call run.bat meminfo.py' not in data:
         g_first_run = True
@@ -208,22 +209,10 @@ def main(argv = None, prog = None):
         with open(start_bat, 'w', newline = '\r\n') as file:
             file.write(data)
 
-    test_bat = f'{cwd}\\TEST.BAT'
-    data = None
-    try:
-        with open(test_bat, 'r', newline = '\n') as file:
-            data = file.read()
-    except Exception:
-        pass
-    if not data or 'call run.bat memspd.py' not in data:
-        g_first_run = True
-        data = 'call run.bat memspd.py \n'
-        with open(test_bat, 'w', newline = '\r\n') as file:
-            file.write(data)
-
     if g_first_run or not unknown:
-        command = [ 'cmd.exe', '/c', f'python\\python.exe meminfo.py && pause || pause' ]
-    elif unknown[0].endswith('.py'):
+        unknown = [ 'meminfo.py' ]
+
+    if unknown[0].endswith('.py'):
         params = " ".join(unknown)
         command = [ 'cmd.exe', '/c', f'python\\python.exe {params} && pause || pause' ]
     else:
@@ -234,12 +223,12 @@ def main(argv = None, prog = None):
         sys.exit(1)
     elif command:
         elevate(command, cwd = cwd)
-        sys.exit()
+        sys.exit(0)
     else:
         parser.print_usage()
 
 
-_entry_point = lambda: sys.exit(main())
+_entry_point = lambda: sys.exit( main() )
 
 if __name__ == '__main__':
     _entry_point()

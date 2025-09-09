@@ -1,1 +1,2 @@
-python\python.exe run.py %*
+set SCRIPT=run.py
+python\python.exe %SCRIPT% %*
