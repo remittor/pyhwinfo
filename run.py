@@ -205,7 +205,8 @@ def main(argv = None, prog = None):
         pass
     if not data or 'call run.bat meminfo.py' not in data:
         g_first_run = True
-        data = 'call run.bat meminfo.py \n'
+        data  = 'cd /D "%~dp0" \n'
+        data += 'call run.bat meminfo.py \n'
         with open(start_bat, 'w', newline = '\r\n') as file:
             file.write(data)
 
