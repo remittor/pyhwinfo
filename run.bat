@@ -1,4 +1,4 @@
 cd /D "%~dp0"
-set STR1=run
-set STR2=.py
-python\python.exe %STR1%%STR2% %*
+set STR5=run
+set STR6=.py
+python\python.exe %STR5%%STR6% %*
