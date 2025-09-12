@@ -14,6 +14,7 @@ import subprocess
 import traceback
 import base64
 
+import version
 
 g_first_run = False
 
@@ -186,6 +187,55 @@ def _elevate_windows(command, cwd = None, hide = False):
     finally:
         pass
 
+def get_header(delim, suffix = ''):
+    header = delim*58 + '\n'
+    header += f'\n'
+    header += f' pyhwinfo v{version.appver} {suffix} \n'
+    return header
+
+def menu1_show():
+    print(get_header('='))
+    print(' 1 - run meminfo')
+    print(' 2 - get IMC.json')
+    print(' 3 - get MCHBAR and IMC_mini.json')
+    print(' 0 - Exit')
+
+def menu1_process(id):
+    if id == 1: return [ "run.py", "meminfo.py" ]
+    if id == 2: return [ "run.py", "memspd.py" ]
+    if id == 3: return [ "run.py", "meminfo.py", "mchbar" ]
+    if id == 0: sys.exit(0)
+    return None
+
+def menu_show(level = 1):
+    menu1_show()
+    return 'Select: '
+
+def menu_process(id, level = 1):
+    return menu1_process(id)
+
+def menu():
+    while True:
+        print('')
+        prompt = menu_show()
+        print('')
+        select = input(prompt)
+        print('')
+        if not select:
+            continue
+        try:
+            id = int(select)
+        except Exception:
+            id = -1
+        if id < 0:
+            continue
+        cmd = menu_process(id)
+        if not cmd:
+            continue
+        if isinstance(cmd, str):
+            cmd = [ cmd ]
+        return subprocess.run( [sys.executable] + cmd )
+
 def main(argv = None, prog = None):
     global g_first_run
     import argparse
@@ -194,6 +244,21 @@ def main(argv = None, prog = None):
     args, unknown = parser.parse_known_args(argv)
     
     cwd = os.path.dirname(os.path.abspath(__file__))
+
+    run_bat = f'{cwd}\\run.bat'
+    data = None
+    try:
+        with open(run_bat, 'r', newline = '\n') as file:
+            data = file.read()
+    except Exception:
+        g_first_run = True
+        pass
+    if not data or ' run.py %*' not in data:
+        g_first_run = True
+        data  = 'cd /D "%~dp0" \n'
+        data += 'python\\python.exe run.py %* \n'
+        with open(run_bat, 'w', newline = '\r\n') as file:
+            file.write(data)
 
     start_bat = f'{cwd}\\!START.bat'
     data = None
@@ -210,8 +275,9 @@ def main(argv = None, prog = None):
         with open(start_bat, 'w', newline = '\r\n') as file:
             file.write(data)
 
-    if g_first_run or not unknown:
-        unknown = [ 'meminfo.py' ]
+    if not unknown:
+        menu()
+        sys.exit(0)
 
     if unknown[0].endswith('.py'):
         params = " ".join(unknown)
