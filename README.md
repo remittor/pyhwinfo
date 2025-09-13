@@ -9,7 +9,18 @@ Python module for retrieving hardware information
 
 ## Usage
 
-* Run `!run.bat` or `!START.bat`
+### For initial launch 
+
+* Download and unpack ZIP-file to any directory
+* Open the directory in Windows Explorer where you unzipped the files
+* Find file `run.py`, hover over this file and hold the right mouse button to bring up the context menu
+* Select "Open with", select "Choose another app" or "Choose an app on your PC"
+* In the dialog box "Open with" that appears, go to the folder where you unpacked the ZIP-file
+* In the same dialog, open the `python` directory, select file `python.exe` and click the "Open" button
+
+### After the initial launch
+
+* Run `!START.bat` or `run.bat`
 
 ## GUI Preview
 
