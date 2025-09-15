@@ -350,15 +350,17 @@ def get_undoc_params(tm, info, controller, channel):
     if cpu_id in (i13_CPU + i14_CPU) and info["DDR_TYPE"] == DDR_TYPE.DDR5 and mem_speed >= 5200:
         # ref: ICÈ_TÈA_BIOS  (leaked BIOS sources)  # func "SetTcTurnAround"
         if WritePost is not None:
-            tm["tWTR_L"] -= WritePost
-            tm["tWTR_S"] -= WritePost
+            if tm["tWTR_L"] >= 2:
+                tm["tWTR_L"] -= WritePost
+            if tm["tWTR_S"] >= 2:
+                tm["tWTR_S"] -= WritePost
     
-    if False:  # ASRock Timing Configurator
+    if 'DEC_tCWL' in tm and tm['DEC_tCWL'] is not None:  # ASRock Timing Configurator
         xCWL = tm['tCWL']
         xCWL -= tm['DEC_tCWL']  # UNDOC
         xCWL += tm['ADD_tCWL']  # UNDOC
-        tm["tWTR_L"] = tm['tWRRD_sg'] - xCWL - info["BurstLength"] - 2
-        tm["tWTR_S"] = tm['tWRRD_dg'] - xCWL - info["BurstLength"] - 2
+        tm["tWTR_L_alt"] = tm['tWRRD_sg'] - xCWL - info["BurstLength"] - 2
+        tm["tWTR_S_alt"] = tm['tWRRD_dg'] - xCWL - info["BurstLength"] - 2
 
     tm["FineGranularityRefresh"] = None
     if False:

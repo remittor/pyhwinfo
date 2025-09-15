@@ -662,8 +662,8 @@ class WindowMemory():
         col_timings = [ "X8_DEVICE" , "PullUpDrv", "PullDownDrv", ]
         create_col_timings(col_timings, wn = 11, frame = ext_timings_frame)
 
-        col_timings = [ "tWR=tWR_a" ]
-        create_col_timings(col_timings, wn = 3, frame = ext_timings_frame)
+        col_timings = [ "tWR=tWR_a", "tWTR_L=tWTR_L_alt", "tWTR_S=tWTR_S_alt" ]
+        create_col_timings(col_timings, wn = 6, frame = ext_timings_frame)
 
         # ODT section
         odt_frame = ttk.Frame(timings_frame)
@@ -991,6 +991,8 @@ class WindowMemory():
         vv.tMOD.value = ci['tMOD'] if 'tMOD' in ci else ''
         vv.X8_DEVICE.value = ci['X8_DEVICE'] if 'X8_DEVICE' in ci else ''
         vv.tWR_a.value = mrs['MR6']['WriteRecoveryTime'] if mrs and 'MR6' in mrs else ''
+        vv.tWTR_L_alt.value = ci['tWTR_L_alt'] if 'tWTR_L_alt' in ci else ''
+        vv.tWTR_S_alt.value = ci['tWTR_S_alt'] if 'tWTR_S_alt' in ci else ''
         
         def get_first_value(value, none_as = ''):
             if isinstance(value, list) and len(value) > 0:
