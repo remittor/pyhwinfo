@@ -221,7 +221,7 @@ def smbus_read_u1(port, dev, command, status = 0xBF):
     if rc == 0xBB:  # Timed out (1000*10*20 ticks)
         print(f'ERROR: smbus_read_u1: timed out')
         return None
-    if (status & SMBHSTSTS_INUSE_STS) != 0:
+    if (status & 0x40) != 0:  # SMBHSTSTS_INUSE_STS = 0x40
         print('ERROR: smbus_read_u1: status = IN_USE')
     return None
 
