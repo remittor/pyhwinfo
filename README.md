@@ -1,4 +1,5 @@
-[![Download latest](https://img.shields.io/badge/🡇-Download_latest-green)](https://github.com/remittor/pyhwinfo/archive/refs/heads/master.zip)
+[![Download latest](https://img.shields.io/badge/⏬-Download_latest-green)](https://github.com/remittor/pyhwinfo/archive/refs/heads/master.zip)
+[![dowloads](https://raw.githubusercontent.com/remittor/pyhwinfo/gh-pages/traffic/clones.svg)](https://github.com/remittor/pyhwinfo/archive/refs/heads/master.zip)
 [![GitHub Stars](https://img.shields.io/github/stars/remittor/pyhwinfo?style=flat)](https://github.com/remittor/pyhwinfo/stargazers)
 [![ViewCount](https://views.whatilearened.today/views/github/remittor/pyhwinfo.svg)](https://github.com/remittor/pyhwinfo/archive/refs/heads/master.zip)
 [![Donations Page](https://github.com/andry81-cache/gh-content-static-cache/raw/master/common/badges/donate/donate.svg)](https://github.com/remittor/donate)
