@@ -864,13 +864,14 @@ class WindowMemory():
         vv.TIMING_RUNTIME_OC.value = 'ON' if mem['MC_TIMING_RUNTIME_OC_ENABLED'] else 'off'
         vv.BCLK_OC.value = 'ON' if cap['BCLKOCRANGE'] == 3 else 'off'
         vv.OC_ENABLED.value = 'ON' if cap['OC_ENABLED'] else 'off'
+        msrSA = msr.get('VF', {}).get('SYSTEM_AGENT', None) if msr else None
         vv.SA_VID.value = ''
         if mem['SA']['SA_VOLTAGE']:
             vv.SA_VID.value = mem['SA']['SA_VOLTAGE']
-        elif msr and 'VF' in msr and 'SYSTEM_AGENT' in msr['VF']:
-            VoltageTargetMode = msr['VF']['SYSTEM_AGENT']['VoltageTargetMode']
-            VoltageTarget = msr['VF']['SYSTEM_AGENT']['VoltageTarget']
-            VoltageOffset = msr['VF']['SYSTEM_AGENT']['VoltageOffset']
+        elif msrSA:
+            VoltageTargetMode = msrSA['VoltageTargetMode']
+            VoltageTarget = msrSA['VoltageTarget']
+            VoltageOffset = msrSA['VoltageOffset']
             if VoltageTargetMode == 'OVERRIDE':
                 vv.SA_VID.value = round(VoltageTarget, 3)
             elif VoltageOffset < 0.0:
